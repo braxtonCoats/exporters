@@ -21,8 +21,8 @@
     "terser-webpack-plugin": "5.4.0",
     "ts-loader": "^7.0.5",
     "typescript": "^5.2.2",
-    "webpack": "5.105.4",
-    "webpack-cli": "6.0.1"
+    "webpack": "^5.105.4",
+    "webpack-cli": "^6.0.1"
   },
   "resolutions": {
     "@supernovaio/sdk-exporters": "2.3.3"
