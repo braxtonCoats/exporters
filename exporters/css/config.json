@@ -1,5 +1,27 @@
 [
     {
+        "key": "outputFormat",
+        "type": "enum",
+        "default": "both",
+        "title": "Output format",
+        "description": "Choose whether to export CSS custom properties, SCSS variables, or both.",
+        "category": "Output format",
+        "options": {
+            "both": {
+                "label": "CSS + SCSS (both)",
+                "description": "Generate both .css files (--variable: value) and .scss files ($variable: value !default)"
+            },
+            "css": {
+                "label": "CSS only",
+                "description": "Generate .css files with CSS custom properties (--variable: value)"
+            },
+            "scss": {
+                "label": "SCSS only",
+                "description": "Generate .scss files with SCSS variables ($variable: value !default)"
+            }
+        }
+    },
+    {
         "key": "tokenNameStyle",
         "type": "enum",
         "default": "kebabCase",

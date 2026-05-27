@@ -21,6 +21,12 @@ export enum TokenNameStructure {
   CollectionPathAndName = "collectionPathAndName",
 }
 
+export enum OutputFormat {
+  CSS = "css",
+  SCSS = "scss",
+  Both = "both",
+}
+
 export type ExporterConfiguration = {
   /** When enabled, a disclaimer showing the fact that the file was generated automatically and should not be changed manually will appear in all style styles */
   showGeneratedFileDisclaimer: boolean
@@ -84,4 +90,6 @@ export type ExporterConfiguration = {
   propertyToWriteNameToIncludesVar: boolean
   /** When enabled, references will include fallback values as raw token values to handle cases when referenced variables are not loaded */
   useFallbackValues: boolean
+  /** Controls whether to generate CSS custom properties (.css), SCSS variables (.scss), or both */
+  outputFormat: OutputFormat
 }
