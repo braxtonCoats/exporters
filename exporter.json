@@ -1,0 +1,18 @@
+{
+    "id": "bandwidth.exporter-css-scss",
+    "name": "CSS + SCSS",
+    "description": "Export your design tokens into CSS custom properties (--variable: value) and/or SCSS variables ($variable: value !default).",
+    "author": "Braxton Coats",
+    "organization": "Bandwidth",
+    "homepage": "https://github.com/braxtonCoats/exporters",
+    "version": "3.5.0",
+    "usesBrands": true,
+    "usesThemes": true,
+    "executable": "/exporters/css/dist/build.js",
+    "engine": "latest",
+    "tags": [
+        "CSS",
+        "SCSS",
+        "Tokens"
+    ]
+}
