@@ -8,7 +8,7 @@
     "version": "3.5.0",
     "usesBrands": true,
     "usesThemes": true,
-    "executable": "/dist/build.js",
+    "executable": "/exporters/css/dist/build.js",
     "engine": "latest",
     "tags": [
         "CSS",

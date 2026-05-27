@@ -1,7 +1,7 @@
 import { Supernova, PulsarContext, RemoteVersionIdentifier, AnyOutputFile } from "@supernovaio/sdk-exporters"
 import { ThemeHelper, WriteTokenPropStore } from "@supernovaio/export-utils"
 import { ExporterConfiguration, ThemeExportStyle } from "../config"
-import { indexOutputFile } from "./files/index-file"
+import { indexOutputFiles } from "./files/index-file"
 import { generateStyleFiles } from "./files/style-file"
 import { tokenVariableName } from "./content/token"
 
@@ -76,7 +76,7 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
         tokens = sdk.tokens.computeTokensByApplyingThemes(tokens, tokens, themesToApply)
         const directFiles = [
           ...generateStyleFiles(tokens, tokenGroups, "", undefined, tokenCollections),
-          indexOutputFile(tokens)
+          ...indexOutputFiles(tokens)
         ]
         outputFiles = processOutputFiles(directFiles)
         break
@@ -99,7 +99,7 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
           ? generateStyleFiles(tokens, tokenGroups, "", undefined, tokenCollections)
           : []
 
-        const separateFiles = [...baseFiles, ...themeFiles, indexOutputFile(tokens, themesToApply)]
+        const separateFiles = [...baseFiles, ...themeFiles, ...indexOutputFiles(tokens, themesToApply)]
         outputFiles = processOutputFiles(separateFiles)
         break
 
@@ -119,7 +119,7 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
           tokenCollections
         )
 
-        const mergedFiles = [...baseTokenFiles, ...mergedThemeFiles, indexOutputFile(tokens, ["themed"])]
+        const mergedFiles = [...baseTokenFiles, ...mergedThemeFiles, ...indexOutputFiles(tokens, ["themed"])]
         outputFiles = processOutputFiles(mergedFiles)
         break
     }
@@ -129,7 +129,7 @@ Pulsar.export(async (sdk: Supernova, context: PulsarContext): Promise<Array<AnyO
       ...(exportConfiguration.exportBaseValues
         ? generateStyleFiles(tokens, tokenGroups, "", undefined, tokenCollections)
         : []),
-      indexOutputFile(tokens)
+      ...indexOutputFiles(tokens)
     ]
     outputFiles = processOutputFiles(defaultFiles)
   }

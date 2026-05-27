@@ -3,7 +3,7 @@ import { NamingHelper, CSSHelper, GeneralHelper } from "@supernovaio/export-util
 import { Token, TokenGroup, TokenType } from "@supernovaio/sdk-exporters"
 import { exportConfiguration } from ".."
 import { DEFAULT_TOKEN_PREFIXES } from "../constants/defaults"
-import { TokenNameStructure } from "../../config"
+import { TokenNameStructure, OutputFormat } from "../../config"
 
 /**
  * Gets the prefix for a specific token type based on configuration.
@@ -150,39 +150,48 @@ export function generateRgbUtilityVariable(
 }
 
 /**
- * Converts a design token into its CSS custom property representation.
+ * Converts a design token into its CSS custom property or SCSS variable representation.
  * Handles formatting of the token value, references, and optional description comments.
  *
  * @param token - The design token to convert
  * @param mappedTokens - Map of all tokens for resolving references
  * @param tokenGroups - Array of token groups for determining token hierarchy
  * @param collections - Array of collections for resolving collection names
- * @param colorTokensNeedingRgb - Set of color token IDs that need RGB utility versions
- * @returns Formatted CSS custom property string with optional description comment and RGB utilities
+ * @param colorTokensNeedingRgb - Set of color token IDs that need RGB utility versions (CSS only)
+ * @param format - Output format: CSS custom property (default) or SCSS variable
+ * @returns Formatted variable declaration string with optional description comment
  */
 export function convertedToken(
   token: Token,
   mappedTokens: Map<string, Token>,
   tokenGroups: Array<TokenGroup>,
   collections: Array<DesignSystemCollection> = [],
-  colorTokensNeedingRgb?: Set<string>
+  colorTokensNeedingRgb?: Set<string>,
+  format: OutputFormat = OutputFormat.CSS
 ): string {
-  // Generate the CSS variable name based on token properties and configuration
+  // Generate the variable name based on token properties and configuration
   const name = tokenVariableName(token, tokenGroups, collections)
+  const isScss = format === OutputFormat.SCSS
 
-  // Convert token value to CSS, handling references and formatting according to configuration
+  // Convert token value, handling references according to the target format
   const value = CSSHelper.tokenToCSS(token, mappedTokens, {
     allowReferences: exportConfiguration.useReferences,
     decimals: exportConfiguration.colorPrecision,
     colorFormat: exportConfiguration.colorFormat,
     forceRemUnit: exportConfiguration.forceRemUnit,
     remBase: exportConfiguration.remBase,
-    // Custom handler for token references - converts them to CSS var() syntax
-    // When context.needsRgb is true, returns RGB utility variable for color tokens
-    // When useFallbackValues is enabled, includes raw token value as fallback
+    // Convert token references to the appropriate variable syntax for the target format:
+    //   SCSS: $variable-name
+    //   CSS:  var(--variable-name) with optional fallback / RGB utility support
     tokenToVariableRef: (t, context) => {
       const variableName = tokenVariableName(t, tokenGroups, collections)
-      
+
+      if (isScss) {
+        // SCSS variable reference — plain $var syntax
+        return `$${variableName}`
+      }
+
+      // CSS var() references (existing logic)
       if (context?.needsRgb && t.tokenType === TokenType.color && colorTokensNeedingRgb?.has(t.id)) {
         if (exportConfiguration.useFallbackValues) {
           const rgbValue = getColorTokenRgbValue(t)
@@ -190,7 +199,7 @@ export function convertedToken(
         }
         return `var(--rgb-${variableName})`
       }
-      
+
       if (exportConfiguration.useFallbackValues) {
         const rawValue = getTokenRawValue(t, mappedTokens)
         return `var(--${variableName}, ${rawValue})`
@@ -198,23 +207,31 @@ export function convertedToken(
       return `var(--${variableName})`
     },
   })
-  const indentString = GeneralHelper.indent(exportConfiguration.indent)
+
+  // SCSS variables live at the top level (no selector block), so no indentation.
+  // CSS variables are indented inside their selector block.
+  const indentString = isScss ? '' : GeneralHelper.indent(exportConfiguration.indent)
 
   let output = ""
-  
+
   // Add description comment if enabled and description exists
   if (exportConfiguration.showDescriptions && token.description) {
     output += `${indentString}/* ${token.description.trim()} */\n`
   }
-  
-  // Add the main token variable
-  output += `${indentString}--${name}: ${value};`
-  
-  // Generate RGB utility variable if this color token needs one
-  if (token.tokenType === TokenType.color && colorTokensNeedingRgb?.has(token.id)) {
-    output += `\n${generateRgbUtilityVariable(token, tokenGroups, collections)}`
+
+  if (isScss) {
+    // SCSS format: $variable-name: value !default;
+    output += `$${name}: ${value} !default;`
+  } else {
+    // CSS format: --variable-name: value;
+    output += `${indentString}--${name}: ${value};`
+
+    // RGB utility variables are CSS-only (used for opacity in shadows/borders/gradients)
+    if (token.tokenType === TokenType.color && colorTokensNeedingRgb?.has(token.id)) {
+      output += `\n${generateRgbUtilityVariable(token, tokenGroups, collections)}`
+    }
   }
-  
+
   return output
 }
 
