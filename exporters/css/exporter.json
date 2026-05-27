@@ -1,10 +1,10 @@
 {
-    "id": "supernovaio.exporter-css",
-    "name": "CSS",
-    "description": "Export your design tokens into CSS variables and definitions.",
-    "author": "Jiri Trecak",
-    "organization": "Supernova.io",
-    "homepage": "https://supernova.io",
+    "id": "bandwidth.exporter-css-scss",
+    "name": "CSS + SCSS",
+    "description": "Export your design tokens into CSS custom properties (--variable: value) and/or SCSS variables ($variable: value !default).",
+    "author": "Braxton Coats",
+    "organization": "Bandwidth",
+    "homepage": "https://github.com/braxtonCoats/exporters",
     "version": "3.5.0",
     "usesBrands": true,
     "usesThemes": true,
@@ -12,7 +12,7 @@
     "engine": "latest",
     "tags": [
         "CSS",
-        "Tokens",
-        "New"
+        "SCSS",
+        "Tokens"
     ]
 }
